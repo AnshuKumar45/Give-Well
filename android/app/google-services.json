@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "543833958300",
+    "project_id": "communityfundraiserapp",
+    "storage_bucket": "communityfundraiserapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:543833958300:android:8daddd8118d15614d8ca59",
+        "android_client_info": {
+          "package_name": "com.example.pacomfndrsapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIy0otgwGNAVtundZQ8SgzZZIp5X6gzxI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
