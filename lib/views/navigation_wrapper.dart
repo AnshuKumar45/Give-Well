@@ -29,7 +29,7 @@ class NavigationWrapper extends StatelessWidget {
             unselectedLabelStyle: const TextStyle(),
             backgroundColor: AppColor.primaryBackgroundW,
             selectedItemColor: AppColor.primary,
-            unselectedItemColor: AppColor.textAccentB.withOpacity(.55),
+            unselectedItemColor: AppColor.textAccentW.withOpacity(.55),
             iconSize: 25,
             currentIndex: navigationController.pageIndex,
             onTap: (index) {
