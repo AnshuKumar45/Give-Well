@@ -6,7 +6,7 @@ import 'package:fundraiser_app/views/profile/profile_page.dart';
 class Utils {
   static List<Widget> tabs = [
     const HomePage(),
-    const CreateFundRaserPage(),
+    CreateFundRaserPage(),
     const ProfilePage()
   ];
 }
