@@ -36,21 +36,20 @@ class NavigationWrapper extends StatelessWidget {
               navigationController.pageController.jumpToPage(index);
               navigationController.updateIndex(index);
             },
-            items: [
+            items: const [
               BottomNavigationBarItem(
-                backgroundColor: AppColor.primaryBackgroundW,
-                icon: const Icon(EvaIcons.homeOutline),
+                icon: Icon(EvaIcons.homeOutline),
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                backgroundColor: AppColor.primaryBackgroundW,
-                icon: const Icon(EvaIcons.searchOutline),
-                activeIcon: const Icon(Icons.add),
+                icon: Icon(
+                  Icons.add,
+                  size: 25,
+                ),
                 label: 'Create',
               ),
               BottomNavigationBarItem(
-                backgroundColor: AppColor.primaryBackgroundW,
-                icon: const Icon(Icons.account_circle_outlined),
+                icon: Icon(Icons.account_circle_outlined),
                 label: 'Profile',
               ),
             ],

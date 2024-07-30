@@ -7,6 +7,8 @@ class Utils {
   static List<Widget> tabs = [
     const HomePage(),
     CreateFundRaserPage(),
-    const ProfilePage()
+    ProfilePage(),
+     CreateFundRaserPage(),
+    ProfilePage()
   ];
 }
