@@ -21,7 +21,7 @@ class CreateFundRaserPage extends StatelessWidget {
   final TextEditingController endDateController = TextEditingController();
 
   final TextEditingController fundTypeController = TextEditingController();
-  
+
   final FirebaseStorageController controller =
       Get.put(FirebaseStorageController());
   @override
@@ -48,7 +48,6 @@ class CreateFundRaserPage extends StatelessWidget {
               fundTypeController.clear();
               endDateController.clear();
               upiController.clear();
-              print(res);
             },
             child: text("post", AppColor.textAccentW, 18),
           )
@@ -67,7 +66,8 @@ class CreateFundRaserPage extends StatelessWidget {
                         "https://i.natgeofe.com/k/7d906c71-1105-4048-b32b-a55b1b04e3bc/OG_Floods_KIDS_0922_3x2.jpg"),
                   ),
                   IconButton(
-                    onPressed: () => controller.uploadFile(FileSourceType.gallery),
+                    onPressed: () =>
+                        controller.uploadFile(FileSourceType.gallery),
                     icon: Icon(
                       Icons.add_a_photo,
                       color: AppColor.primary,

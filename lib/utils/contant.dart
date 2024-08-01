@@ -8,7 +8,5 @@ class Utils {
     const HomePage(),
     CreateFundRaserPage(),
     ProfilePage(),
-     CreateFundRaserPage(),
-    ProfilePage()
   ];
 }
