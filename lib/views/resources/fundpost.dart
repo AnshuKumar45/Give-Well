@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PostMethods {
@@ -9,6 +11,7 @@ class PostMethods {
     required String amount,
     required String upi,
     required String endDate,
+    required String photoUrl,
   }) async {
     String res = "";
     int get = DateTime.now().microsecondsSinceEpoch;
@@ -31,6 +34,7 @@ class PostMethods {
           "url": "",
           "creatorInfo": [],
           "upvote": 0,
+          "photoUrl": photoUrl,
         });
         res = "success";
       }

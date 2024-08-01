@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fundraiser_app/controllers/firebase_storage_controller.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
+import 'package:fundraiser_app/utils/file_picker_service.dart';
 import 'package:fundraiser_app/utils/text_styles.dart';
-import 'package:fundraiser_app/views/funds/fundpost.dart';
+import 'package:fundraiser_app/views/resources/fundpost.dart';
 import 'package:fundraiser_app/widgets/Text_field.dart';
+import 'package:get/get.dart';
 
 class CreateFundRaserPage extends StatelessWidget {
   CreateFundRaserPage({super.key});
@@ -18,7 +21,9 @@ class CreateFundRaserPage extends StatelessWidget {
   final TextEditingController endDateController = TextEditingController();
 
   final TextEditingController fundTypeController = TextEditingController();
-
+  
+  final FirebaseStorageController controller =
+      Get.put(FirebaseStorageController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,12 +34,14 @@ class CreateFundRaserPage extends StatelessWidget {
           TextButton(
             onPressed: () async {
               String res = await PostMethods().post(
-                  amount: amountController.text,
-                  desc: descController.text,
-                  endDate: endDateController.text,
-                  fundType: fundTypeController.text,
-                  name: nameController.text,
-                  upi: upiController.text);
+                amount: amountController.text,
+                desc: descController.text,
+                endDate: endDateController.text,
+                fundType: fundTypeController.text,
+                name: nameController.text,
+                upi: upiController.text,
+                photoUrl: '',
+              );
               nameController.clear();
               descController.clear();
               amountController.clear();
@@ -60,7 +67,7 @@ class CreateFundRaserPage extends StatelessWidget {
                         "https://i.natgeofe.com/k/7d906c71-1105-4048-b32b-a55b1b04e3bc/OG_Floods_KIDS_0922_3x2.jpg"),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () => controller.uploadFile(FileSourceType.gallery),
                     icon: Icon(
                       Icons.add_a_photo,
                       color: AppColor.primary,
