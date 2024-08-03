@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/utils/text_styles.dart';
 import 'package:fundraiser_app/views/navigation_wrapper.dart';
-import 'package:fundraiser_app/widgets/Text_field.dart';
+import 'package:fundraiser_app/widgets/text_field.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});

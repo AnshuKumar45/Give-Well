@@ -3,8 +3,8 @@ import 'package:fundraiser_app/controllers/firebase_storage_controller.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/utils/file_picker_service.dart';
 import 'package:fundraiser_app/utils/text_styles.dart';
-import 'package:fundraiser_app/views/resources/fundpost.dart';
-import 'package:fundraiser_app/widgets/Text_field.dart';
+import 'package:fundraiser_app/database/firebase_post_service.dart';
+import 'package:fundraiser_app/widgets/text_field.dart';
 import 'package:get/get.dart';
 
 class CreateFundRaserPage extends StatelessWidget {
@@ -33,7 +33,7 @@ class CreateFundRaserPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () async {
-              String res = await PostMethods().post(
+              await PostMethods().post(
                 amount: amountController.text,
                 desc: descController.text,
                 endDate: endDateController.text,
@@ -60,7 +60,7 @@ class CreateFundRaserPage extends StatelessWidget {
             children: [
               Stack(
                 children: [
-                  Container(
+                  SizedBox(
                     height: 300,
                     child: Image.network(
                         "https://i.natgeofe.com/k/7d906c71-1105-4048-b32b-a55b1b04e3bc/OG_Floods_KIDS_0922_3x2.jpg"),
