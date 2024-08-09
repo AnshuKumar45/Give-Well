@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fundraiser_app/database/models/post_models.dart';
+import 'package:fundraiser_app/models/post_models.dart';
 
 class PostMethods {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;

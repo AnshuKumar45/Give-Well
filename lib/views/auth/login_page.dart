@@ -7,15 +7,28 @@ import 'package:velocity_x/velocity_x.dart';
 import '../../controllers/auth_controller.dart';
 
 // ignore: must_be_immutable
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final AuthController authController = Get.put(AuthController());
 
   // TextEditingControllers for the text fields
   final TextEditingController nameController = TextEditingController();
+
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
 
-  LoginPage({super.key});
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +72,7 @@ class LoginPage extends StatelessWidget {
                 //   emailController.text.trim(),
                 //   passwordController.text.trim(),
                 // );
-              Get.offAll(() => NavigationWrapper());
+                Get.offAll(() => NavigationWrapper());
               },
               child: const Text('Login'),
             ),
