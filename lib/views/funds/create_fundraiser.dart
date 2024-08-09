@@ -3,10 +3,10 @@ import 'package:fundraiser_app/controllers/firebase_storage_controller.dart';
 import 'package:fundraiser_app/database/firebase_post_service.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/utils/file_picker_service.dart';
-import 'package:fundraiser_app/utils/text_styles.dart';
-import 'package:fundraiser_app/widgets/text_field.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:fundraiser_app/widgets/custom_textform_field.dart';
+import '../../utils/text_styles.dart';
 
 class CreateFundRaserPage extends StatelessWidget {
   CreateFundRaserPage({super.key});
