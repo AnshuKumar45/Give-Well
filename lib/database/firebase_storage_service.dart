@@ -16,8 +16,8 @@ class FirebaseStorageService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   ///------------------------uploading-----------------------------------
-  Future<void> uploadFile(
-      FileSourceType sourceType, String uploadedFileUrl) async {
+  Future<String> uploadFile(FileSourceType sourceType) async {
+    String photoUrl = "";
     try {
       File? file = await filePickerService.pickFile(sourceType);
 
@@ -29,15 +29,18 @@ class FirebaseStorageService {
         await storageRef.putFile(file);
         // Get the download URL
         String downloadURL = await storageRef.getDownloadURL();
-        uploadedFileUrl = downloadURL;
+        photoUrl = downloadURL;
+        debugPrint("This is the download url---->  $photoUrl");
         // Show a success message
         Get.snackbar('Success', 'File uploaded successfully!');
       } else {
         Get.snackbar('Error', 'No file selected');
       }
+      return photoUrl;
     } catch (e) {
       debugPrint(e.toString());
       Get.snackbar('Error', 'Failed to upload file: $e');
+      return photoUrl;
     }
   }
 

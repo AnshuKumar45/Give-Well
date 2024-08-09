@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fundraiser_app/controllers/firebase_storage_controller.dart';
+import 'package:fundraiser_app/database/firebase_post_service.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/utils/file_picker_service.dart';
 import 'package:fundraiser_app/utils/text_styles.dart';
-import 'package:fundraiser_app/database/firebase_post_service.dart';
 import 'package:fundraiser_app/widgets/text_field.dart';
 import 'package:get/get.dart';
 
@@ -22,7 +22,7 @@ class CreateFundRaserPage extends StatelessWidget {
 
   final TextEditingController fundTypeController = TextEditingController();
 
-  final FirebaseStorageController controller =
+  final FirebaseStorageController storageController =
       Get.put(FirebaseStorageController());
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class CreateFundRaserPage extends StatelessWidget {
                 fundType: fundTypeController.text,
                 name: nameController.text,
                 upi: upiController.text,
-                photoUrl: '',
+                photoUrl: storageController.uploadedFileURL.value,
               );
               nameController.clear();
               descController.clear();
@@ -67,7 +67,7 @@ class CreateFundRaserPage extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () =>
-                        controller.uploadFile(FileSourceType.gallery),
+                        storageController.uploadFile(FileSourceType.gallery),
                     icon: Icon(
                       Icons.add_a_photo,
                       color: AppColor.primary,
