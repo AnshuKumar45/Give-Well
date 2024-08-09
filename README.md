@@ -1,6 +1,6 @@
 # fundraiser_app
 
-A new Flutter project.
+A project using flutter framework aiming to create a reliable and genuine platform for crowd fundting and serve the needy one.
 
 ## Getting Started
 
