@@ -6,6 +6,7 @@ import 'package:fundraiser_app/utils/file_picker_service.dart';
 import 'package:fundraiser_app/utils/text_styles.dart';
 import 'package:fundraiser_app/widgets/text_field.dart';
 import 'package:get/get.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class CreateFundRaserPage extends StatelessWidget {
   CreateFundRaserPage({super.key});
@@ -58,23 +59,31 @@ class CreateFundRaserPage extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           child: Column(
             children: [
-              Stack(
-                children: [
-                  SizedBox(
-                    height: 300,
-                    child: Image.network(
-                        "https://i.natgeofe.com/k/7d906c71-1105-4048-b32b-a55b1b04e3bc/OG_Floods_KIDS_0922_3x2.jpg"),
-                  ),
-                  IconButton(
-                    onPressed: () =>
-                        storageController.uploadFile(FileSourceType.gallery),
-                    icon: Icon(
-                      Icons.add_a_photo,
-                      color: AppColor.primary,
-                    ),
-                  ),
-                ],
-              ),
+              Obx(() => Stack(
+                    children: [
+                      SizedBox(
+                        height: 200,
+                        width: double.infinity,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16.0),
+                          child: (storageController
+                                  .uploadedFileURL.value.isEmptyOrNull)
+                              ? Icon(
+                                  Icons.add_a_photo,
+                                  size: 150,
+                                  color: AppColor.grey,
+                                ).onTap(() {
+                                  storageController
+                                      .uploadFile(FileSourceType.gallery);
+                                })
+                              : Image.network(
+                                  storageController.uploadedFileURL.value,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                      ),
+                    ],
+                  )),
               TextInput(
                   text: "Fund name",
                   textEditingController: nameController,

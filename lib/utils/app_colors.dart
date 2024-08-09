@@ -6,4 +6,5 @@ class AppColor {
   static Color primaryBackgroundB = Colors.black;
   static Color textAccentW = Colors.grey.shade700;
   static Color textAccentB = Colors.grey.shade50;
+  static Color grey = Colors.grey.shade700;
 }
