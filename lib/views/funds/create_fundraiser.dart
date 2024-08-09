@@ -25,6 +25,7 @@ class CreateFundRaserPage extends StatelessWidget {
 
   final FirebaseStorageController storageController =
       Get.put(FirebaseStorageController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,6 +85,9 @@ class CreateFundRaserPage extends StatelessWidget {
                       ),
                     ],
                   )),
+              const SizedBox(
+                height: 20,
+              ),
               TextInput(
                   text: "Fund name",
                   textEditingController: nameController,

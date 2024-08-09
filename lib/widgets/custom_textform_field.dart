@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fundraiser_app/utils/app_colors.dart';
 
 class TextInput extends StatelessWidget {
   final TextEditingController textEditingController;
@@ -16,17 +15,14 @@ class TextInput extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       borderSide: Divider.createBorderSide(context),
     );
-    return TextField(
+    return TextFormField(
       controller: textEditingController,
       decoration: InputDecoration(
-        fillColor: AppColor.primaryBackgroundW,
-        hintText: text,
+        labelText: text,
         border: inputborder,
-        enabledBorder: inputborder,
-        focusedBorder: inputborder,
-        filled: true,
         contentPadding: const EdgeInsets.all(8),
       ),
+      obscureText: true,
       keyboardType: inputType,
     );
   }

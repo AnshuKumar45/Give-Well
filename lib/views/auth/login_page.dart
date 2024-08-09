@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fundraiser_app/views/auth/signup_page.dart';
+import 'package:fundraiser_app/views/navigation_wrapper.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -54,10 +55,11 @@ class LoginPage extends StatelessWidget {
             // Login Button
             ElevatedButton(
               onPressed: () {
-                authController.signInWithEmail(
-                  emailController.text.trim(),
-                  passwordController.text.trim(),
-                );
+                // authController.signInWithEmail(
+                //   emailController.text.trim(),
+                //   passwordController.text.trim(),
+                // );
+              Get.offAll(() => NavigationWrapper());
               },
               child: const Text('Login'),
             ),

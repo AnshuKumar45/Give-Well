@@ -1,6 +1,9 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:fundraiser_app/controllers/firebase_storage_controller.dart';
+import 'package:fundraiser_app/widgets/open_image_source.dart';
 import 'package:image_picker/image_picker.dart';
 
 enum FileSourceType {
@@ -25,6 +28,16 @@ class FilePickerService {
         return File(photo.path);
       }
     }
+    return null;
+  }
+
+  Future<File?> chooseImageFile(BuildContext context,FirebaseStorageController storageController) async {
+    try {
+      return await showModalBottomSheet(
+        context: context,
+        builder: (builder) => bottomSheet(context,storageController),
+      );
+    } catch (e) {}
     return null;
   }
 }
