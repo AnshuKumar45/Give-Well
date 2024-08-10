@@ -22,7 +22,6 @@ class TextInput extends StatelessWidget {
         border: inputborder,
         contentPadding: const EdgeInsets.all(8),
       ),
-      obscureText: true,
       keyboardType: inputType,
     );
   }

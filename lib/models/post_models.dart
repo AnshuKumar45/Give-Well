@@ -7,11 +7,11 @@ class PostModels {
   final String endDate;
   final String photoUrl;
   final List details;
-  final DateTime date;
+  final String date;
   final String priority;
   final List creatorInfo;
   final int upvote;
-
+  final String id;
   const PostModels({
     required this.amount,
     required this.creatorInfo,
@@ -25,6 +25,7 @@ class PostModels {
     required this.priority,
     required this.upi,
     required this.upvote,
+    required this.id,
   });
 
   Map<String, dynamic> toJson() => {
@@ -40,5 +41,6 @@ class PostModels {
         "photoUrl": photoUrl,
         "upi": upi,
         "amount": amount,
+        "fundId": id,
       };
 }

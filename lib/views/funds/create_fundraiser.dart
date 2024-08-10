@@ -8,6 +8,7 @@ import 'package:velocity_x/velocity_x.dart';
 import 'package:fundraiser_app/widgets/custom_textform_field.dart';
 import '../../utils/text_styles.dart';
 
+//
 class CreateFundRaserPage extends StatelessWidget {
   CreateFundRaserPage({super.key});
 
@@ -28,6 +29,8 @@ class CreateFundRaserPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<String> optionList = ['Health', 'Disater', 'General'];
+    String? selectedValue = optionList[0];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColor.primaryBackgroundW,
@@ -39,7 +42,7 @@ class CreateFundRaserPage extends StatelessWidget {
                 amount: amountController.text,
                 desc: descController.text,
                 endDate: endDateController.text,
-                fundType: fundTypeController.text,
+                fundType: selectedValue!,
                 name: nameController.text,
                 upi: upiController.text,
                 photoUrl: storageController.uploadedFileURL.value,
@@ -50,6 +53,8 @@ class CreateFundRaserPage extends StatelessWidget {
               fundTypeController.clear();
               endDateController.clear();
               upiController.clear();
+              storageController.uploadedFileURL.value = '';
+              selectedValue = optionList[0];
             },
             child: text("post", AppColor.textAccentW, 18),
           )
@@ -102,10 +107,25 @@ class CreateFundRaserPage extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              TextInput(
-                  text: "Fund Tpye",
-                  textEditingController: fundTypeController,
-                  inputType: TextInputType.text),
+              DropdownButtonFormField<String>(
+                value: selectedValue,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                items: optionList
+                    .map(
+                      (String item) => DropdownMenuItem<String>(
+                        value: item,
+                        child: Text(item),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (String? value) {
+                  selectedValue = value;
+                },
+              ),
               const SizedBox(
                 height: 10,
               ),
@@ -125,15 +145,30 @@ class CreateFundRaserPage extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              TextInput(
-                text: "Enter end date(dd/mm/yyyy)",
-                textEditingController: endDateController,
-                inputType: TextInputType.datetime,
+              TextFormField(
+                controller: endDateController,
+                decoration: const InputDecoration(
+                  labelText: 'End date',
+                  border: OutlineInputBorder(),
+                  filled: true,
+                  prefixIcon: Icon(Icons.calendar_today),
+                  contentPadding: EdgeInsets.all(8),
+                ),
+                onTap: () => selectDate(context),
+                readOnly: true,
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> selectDate(BuildContext context) async {
+    DateTime? picked = await showDatePicker(
+        context: context, firstDate: DateTime.now(), lastDate: DateTime(2050));
+    if (picked != null) {
+      endDateController.text = picked.toString().split(' ')[0];
+    }
   }
 }

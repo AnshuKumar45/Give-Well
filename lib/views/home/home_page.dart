@@ -43,7 +43,9 @@ class _HomePageState extends State<HomePage> {
           }
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) => const FundCard(),
+            itemBuilder: (context, index) => FundCard(
+              snap : snapshot.data!.docs[index].data(),
+            ),
           );
         },
       ),

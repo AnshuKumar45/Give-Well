@@ -21,10 +21,12 @@ class PostMethods {
           amount.isNotEmpty ||
           upi.isNotEmpty ||
           endDate.isNotEmpty) {
+        String id = fundType + get.toString();
         PostModels postModels = PostModels(
+          id: id,
           amount: amount,
           creatorInfo: [],
-          date: DateTime.now(),
+          date: DateTime.now().toString().substring(0, 11),
           desc: desc,
           details: [],
           endDate: endDate,
@@ -35,7 +37,6 @@ class PostMethods {
           upi: upi,
           upvote: 0,
         );
-        String id = fundType + get.toString();
         await _firebaseFirestore.collection('fund').doc(id).set(
               postModels.toJson(),
             );

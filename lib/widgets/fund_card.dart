@@ -3,7 +3,8 @@ import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/utils/text_styles.dart';
 
 class FundCard extends StatelessWidget {
-  const FundCard({super.key});
+  final snap;
+  const FundCard({super.key, required this.snap});
 
   @override
   Widget build(BuildContext context) {
@@ -13,11 +14,11 @@ class FundCard extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 16)
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12)
                 .copyWith(right: 0),
             child: Row(
               children: [
-                text('Fund Name', Colors.black, 20),
+                text(snap['fundName'], Colors.black, 20),
                 const Spacer(),
                 IconButton(
                     onPressed: () {
@@ -48,11 +49,16 @@ class FundCard extends StatelessWidget {
               ],
             ),
           ),
+          text('Details :- ${snap['description']}', Colors.black, 16),
+          text('Needed Amount :- ${snap['amount']}', Colors.black, 16),
+          text('upi :- ${snap['upi']}', Colors.black, 16),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.35,
             width: double.infinity,
             child: Image.network(
-              'https://img.freepik.com/free-photo/colorful-design-with-spiral-design_188544-9588.jpg',
+              (snap['photoUrl'] == '')
+                  ? 'https://img.freepik.com/free-photo/colorful-design-with-spiral-design_188544-9588.jpg'
+                  : snap['photoUrl'],
               fit: BoxFit.cover,
             ),
           ),
@@ -60,7 +66,7 @@ class FundCard extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                onPressed: () {},
+                onPressed: () async {},
                 icon: const Icon(
                   Icons.favorite,
                   color: Colors.red,
@@ -69,13 +75,23 @@ class FundCard extends StatelessWidget {
               IconButton(
                 onPressed: () {},
                 icon: const Icon(
-                  Icons.message,
+                  Icons.insert_comment_rounded,
                 ),
               ),
               IconButton(
                 onPressed: () {},
                 icon: const Icon(Icons.currency_rupee_rounded),
               ),
+              //to join a group or chat
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.chat_outlined),
+                  ),
+                ),
+              )
             ],
           ),
 
@@ -92,7 +108,7 @@ class FundCard extends StatelessWidget {
                           .titleSmall!
                           .copyWith(fontWeight: FontWeight.w800),
                       child: Text(
-                        '1000 likes',
+                        '${snap['upvote']} votes',
                         style: Theme.of(context).textTheme.bodyMedium,
                       )),
                   Container(
@@ -111,7 +127,7 @@ class FundCard extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text: ' hey this is description of fund',
+                            text: ' commented hey this is description of fund',
                           ),
                         ],
                       ),
@@ -129,11 +145,10 @@ class FundCard extends StatelessWidget {
                         ),
                       ),
                       onTap: () {}),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: const Text(
-                      '22//12/24',
-                      style: TextStyle(
+                  SizedBox(
+                    child: Text(
+                      '${snap['date']}',
+                      style: const TextStyle(
                         color: Colors.grey,
                       ),
                     ),
