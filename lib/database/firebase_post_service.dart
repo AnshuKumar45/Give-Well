@@ -8,9 +8,9 @@ class PostMethods {
     required String desc,
     required String fundType,
     required String amount,
-    required String upi,
     required String endDate,
     required String photoUrl,
+    required Map<String, String> details,
   }) async {
     String res = "";
     int get = DateTime.now().microsecondsSinceEpoch;
@@ -19,23 +19,20 @@ class PostMethods {
           desc.isNotEmpty ||
           fundType.isNotEmpty ||
           amount.isNotEmpty ||
-          upi.isNotEmpty ||
           endDate.isNotEmpty) {
         String id = fundType + get.toString();
         PostModels postModels = PostModels(
           id: id,
           amount: amount,
-          creatorInfo: [],
+          creatorInfo: details,
           date: DateTime.now().toString().substring(0, 11),
           desc: desc,
-          details: [],
           endDate: endDate,
           fundType: fundType,
           name: name,
           photoUrl: photoUrl,
           priority: "medium",
-          upi: upi,
-          upvote: 0,
+          upvote: [],
         );
         await _firebaseFirestore.collection('fund').doc(id).set(
               postModels.toJson(),
@@ -46,5 +43,19 @@ class PostMethods {
       res = e.toString();
     }
     return res;
+  }
+
+  Future<void> updateLike(String fundId, String userId, List upvote) async {
+    try {
+      if (upvote.contains(userId)) {
+       await _firebaseFirestore.collection('fund').doc(fundId).update({
+          "upvote": FieldValue.arrayRemove([userId]),
+        });
+      }else{
+        await _firebaseFirestore.collection('fund').doc(fundId).update({
+          "upvote": FieldValue.arrayUnion([userId]),
+        });
+      }
+    } catch (e) {}
   }
 }

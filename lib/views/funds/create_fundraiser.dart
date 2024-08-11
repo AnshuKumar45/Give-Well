@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:fundraiser_app/controllers/auth_controller.dart';
 import 'package:fundraiser_app/controllers/firebase_storage_controller.dart';
 import 'package:fundraiser_app/database/firebase_post_service.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/utils/file_picker_service.dart';
+import 'package:fundraiser_app/widgets/form_field_input.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:fundraiser_app/widgets/custom_textform_field.dart';
 import '../../utils/text_styles.dart';
 
 //
@@ -13,24 +15,24 @@ class CreateFundRaserPage extends StatelessWidget {
   CreateFundRaserPage({super.key});
 
   final TextEditingController nameController = TextEditingController();
-
   final TextEditingController descController = TextEditingController();
-
   final TextEditingController amountController = TextEditingController();
-
   final TextEditingController upiController = TextEditingController();
-
   final TextEditingController endDateController = TextEditingController();
-
   final TextEditingController fundTypeController = TextEditingController();
-
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final FirebaseStorageController storageController =
       Get.put(FirebaseStorageController());
 
+  final _authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
-    List<String> optionList = ['Health', 'Disater', 'General'];
+    phoneController.text = _authController.userDetails.value!.phoneNumber!;
+    emailController.text = _authController.userDetails.value!.email!;
+    List<String> optionList = ['Health', 'Disater', 'General', 'Social', 'NGO'];
     String? selectedValue = optionList[0];
+    CustomFormField form = CustomFormField();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColor.primaryBackgroundW,
@@ -38,14 +40,21 @@ class CreateFundRaserPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () async {
+              Map<String, String> l = {
+                "Name": _authController.userDetails.value!.displayName!,
+                "Email": emailController.text,
+                "Mobile": phoneController.text,
+                "Userid": _authController.userDetails.value!.uid,
+                "upi": upiController.text,
+              };
               await PostMethods().post(
                 amount: amountController.text,
                 desc: descController.text,
                 endDate: endDateController.text,
                 fundType: selectedValue!,
                 name: nameController.text,
-                upi: upiController.text,
                 photoUrl: storageController.uploadedFileURL.value,
+                details: l,
               );
               nameController.clear();
               descController.clear();
@@ -53,6 +62,7 @@ class CreateFundRaserPage extends StatelessWidget {
               fundTypeController.clear();
               endDateController.clear();
               upiController.clear();
+              phoneController.clear();
               storageController.uploadedFileURL.value = '';
               selectedValue = optionList[0];
             },
@@ -93,17 +103,72 @@ class CreateFundRaserPage extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              TextInput(
-                  text: "Fund name",
-                  textEditingController: nameController,
-                  inputType: TextInputType.name),
+              TextFormField(
+                decoration: form.inputDecorationNormal("Fund name", false),
+                controller: nameController,
+                keyboardType: TextInputType.name,
+                style: GoogleFonts.aBeeZee(),
+                validator: (name) => (name!.length < 4)
+                    ? 'Name Should be atleast 4 charaters'
+                    : null,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+              ),
               const SizedBox(
                 height: 10,
               ),
-              TextInput(
-                  text: "Description",
-                  textEditingController: descController,
-                  inputType: TextInputType.text),
+              TextFormField(
+                decoration: form.inputDecorationNormal("Description", false),
+                controller: descController,
+                keyboardType: TextInputType.name,
+                style: GoogleFonts.aBeeZee(),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              TextFormField(
+                decoration: form.inputDecoration("Amount to be collected",
+                    false, const Icon(Icons.currency_rupee_rounded)),
+                controller: amountController,
+                style: GoogleFonts.aBeeZee(),
+                keyboardType: TextInputType.number,
+                validator: (value) =>
+                    (!value!.isNum) ? 'Enter a valid amount' : null,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              TextFormField(
+                decoration: form.inputDecoration(
+                    "Enter your upi", false, const Icon(Icons.email_outlined)),
+                controller: upiController,
+                keyboardType: TextInputType.text,
+                style: GoogleFonts.aBeeZee(),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              TextFormField(
+                decoration: form.inputDecoration(
+                    "Mobile No.", false, const Icon(Icons.phone)),
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                style: GoogleFonts.aBeeZee(),
+                validator: (value) => (!value!.isPhoneNumber)
+                    ? 'please enter a valid phone number'
+                    : null,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              TextFormField(
+                decoration: form.inputDecoration(
+                    "Email", true, const Icon(Icons.email)),
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                style: GoogleFonts.aBeeZee(),
+              ),
               const SizedBox(
                 height: 10,
               ),
@@ -118,7 +183,7 @@ class CreateFundRaserPage extends StatelessWidget {
                     .map(
                       (String item) => DropdownMenuItem<String>(
                         value: item,
-                        child: Text(item),
+                        child: text(item, Colors.black, 16),
                       ),
                     )
                     .toList(),
@@ -129,31 +194,11 @@ class CreateFundRaserPage extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              TextInput(
-                textEditingController: amountController,
-                text: "Amount to be collected",
-                inputType: TextInputType.number,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextInput(
-                text: "Enter your upi",
-                textEditingController: upiController,
-                inputType: TextInputType.text,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
               TextFormField(
                 controller: endDateController,
-                decoration: const InputDecoration(
-                  labelText: 'End date',
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  prefixIcon: Icon(Icons.calendar_today),
-                  contentPadding: EdgeInsets.all(8),
-                ),
+                decoration: form.inputDecoration(
+                    "End date", true, const Icon(Icons.calendar_today)),
+                style: GoogleFonts.aBeeZee(),
                 onTap: () => selectDate(context),
                 readOnly: true,
               ),

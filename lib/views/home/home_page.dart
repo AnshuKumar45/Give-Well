@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fundraiser_app/controllers/auth_controller.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/utils/text_styles.dart';
 import 'package:fundraiser_app/widgets/fund_card.dart';
-import 'package:get/get.dart';
 
 import '../../widgets/custom_overlay.dart';
 
@@ -16,10 +14,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
-    debugPrint('User email ${_authController.userDetails.value!.email}');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColor.primaryBackgroundW,
@@ -39,12 +35,15 @@ class _HomePageState extends State<HomePage> {
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(
+              color: Colors.black,
+            ));
           }
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) => FundCard(
-              snap : snapshot.data!.docs[index].data(),
+              snap: snapshot.data!.docs[index].data(),
             ),
           );
         },

@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:fundraiser_app/controllers/auth_controller.dart';
+import 'package:fundraiser_app/database/firebase_post_service.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/utils/text_styles.dart';
+import 'package:get/get.dart';
 
 class FundCard extends StatelessWidget {
   final snap;
-  const FundCard({super.key, required this.snap});
+  FundCard({super.key, required this.snap});
 
+  final _authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
+    String photoUrl = (snap['photoUrl'] == '')
+        ? 'https://img.freepik.com/free-photo/colorful-design-with-spiral-design_188544-9588.jpg'
+        : snap['photoUrl'];
+    bool isLiked = Get.put(false);
     return Container(
       color: AppColor.primaryBackgroundW,
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -56,9 +64,7 @@ class FundCard extends StatelessWidget {
             height: MediaQuery.of(context).size.height * 0.35,
             width: double.infinity,
             child: Image.network(
-              (snap['photoUrl'] == '')
-                  ? 'https://img.freepik.com/free-photo/colorful-design-with-spiral-design_188544-9588.jpg'
-                  : snap['photoUrl'],
+              photoUrl,
               fit: BoxFit.cover,
             ),
           ),
@@ -66,11 +72,19 @@ class FundCard extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                onPressed: () async {},
-                icon: const Icon(
-                  Icons.favorite,
-                  color: Colors.red,
-                ),
+                onPressed: () async {
+                  PostMethods().updateLike(snap['fundId'],
+                      _authController.userDetails.value!.uid, snap['upvote']);
+                  (isLiked == false) ? true : false;
+                },
+                icon: (isLiked == false)
+                    ? Icon(
+                        Icons.favorite_border_outlined,
+                      )
+                    : Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                      ),
               ),
               IconButton(
                 onPressed: () {},
@@ -108,7 +122,7 @@ class FundCard extends StatelessWidget {
                           .titleSmall!
                           .copyWith(fontWeight: FontWeight.w800),
                       child: Text(
-                        '${snap['upvote']} votes',
+                        '${snap['upvote'].length} votes',
                         style: Theme.of(context).textTheme.bodyMedium,
                       )),
                   Container(
