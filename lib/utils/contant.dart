@@ -9,4 +9,5 @@ class Utils {
     CreateFundRaserPage(),
     ProfilePage(),
   ];
+  static List<String> fundCategories = ['Personal','Community','NGOs'];
 }

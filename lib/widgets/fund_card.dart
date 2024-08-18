@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fundraiser_app/controllers/auth_controller.dart';
 import 'package:fundraiser_app/database/firebase_post_service.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
-import 'package:fundraiser_app/utils/text_styles.dart';
 import 'package:get/get.dart';
 
 class FundCard extends StatelessWidget {
@@ -10,166 +9,218 @@ class FundCard extends StatelessWidget {
   FundCard({super.key, required this.snap});
 
   final _authController = Get.find<AuthController>();
+
   @override
   Widget build(BuildContext context) {
     String photoUrl = (snap['photoUrl'] == '')
-        ? 'https://img.freepik.com/free-photo/colorful-design-with-spiral-design_188544-9588.jpg'
+        ? 'https://img.freepik.com/free-vector/no-data-concept-illustration_114360-536.jpg?t=st=1723963444~exp=1723967044~hmac=4de1e61719b003b21114b7a5a51c1dec5759211b80c107a12994eb16e5cd3a52&w=740'
         : snap['photoUrl'];
     bool isLiked = Get.put(false);
-    return Container(
+
+    return Card(
       color: AppColor.primaryBackgroundW,
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12)
-                .copyWith(right: 0),
-            child: Row(
+      elevation: 5,
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header section with fund name and more icon
+            Row(
               children: [
-                text(snap['fundName'], Colors.black, 20),
-                const Spacer(),
+                Expanded(
+                  child: Text(
+                    snap['fundName'],
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.primary,
+                    ),
+                  ),
+                ),
                 IconButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => Dialog(
-                          child: ListView(
-                            shrinkWrap: true,
-                            children: [
-                              'Delete',
-                            ]
-                                .map(
-                                  (e) => InkWell(
-                                    onTap: () {},
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 16),
-                                      child: Text(e),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                          ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.more_vert))
+                        child: ListView(
+                          shrinkWrap: true,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                // Add delete logic
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 16),
+                                child: const Text(
+                                  'Delete',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.redAccent,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.more_vert),
+                ),
               ],
             ),
-          ),
-          text('Details :- ${snap['description']}', Colors.black, 16),
-          text('Needed Amount :- ${snap['amount']}', Colors.black, 16),
-          text('upi :- ${snap['upi']}', Colors.black, 16),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.35,
-            width: double.infinity,
-            child: Image.network(
-              photoUrl,
-              fit: BoxFit.cover,
-            ),
-          ),
-          //upvote & comment join section------
-          Row(
-            children: [
-              IconButton(
-                onPressed: () async {
-                  PostMethods().updateLike(snap['fundId'],
-                      _authController.userDetails.value!.uid, snap['upvote']);
-                  (isLiked == false) ? true : false;
-                },
-                icon: (isLiked == false)
-                    ? Icon(
-                        Icons.favorite_border_outlined,
-                      )
-                    : Icon(
-                        Icons.favorite,
-                        color: Colors.red,
-                      ),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.insert_comment_rounded,
-                ),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.currency_rupee_rounded),
-              ),
-              //to join a group or chat
-              Expanded(
-                child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.chat_outlined),
-                  ),
-                ),
-              )
-            ],
-          ),
+            const SizedBox(height: 10),
 
-          //descriprion section--------
-          Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  DefaultTextStyle(
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall!
-                          .copyWith(fontWeight: FontWeight.w800),
-                      child: Text(
-                        '${snap['upvote'].length} votes',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      )),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.only(
-                      top: 8,
-                    ),
-                    child: RichText(
-                      text: const TextSpan(
-                        style: TextStyle(color: Colors.black),
-                        children: [
-                          TextSpan(
-                            text: 'anshu',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text: ' commented hey this is description of fund',
-                          ),
-                        ],
+            // Details Section
+            Text(
+              'Details: ${snap['description']}',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Needed Amount: ${snap['amount']}',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'UPI: ${snap['upi']}',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Image Section
+            ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.network(
+                photoUrl,
+                height: MediaQuery.of(context).size.height * 0.35,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Upvote, Comment, Donate, Chat Section
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () async {
+                    PostMethods().updateLike(snap['fundId'],
+                        _authController.userDetails.value!.uid, snap['upvote']);
+                    (isLiked == false) ? true : false;
+                  },
+                  icon: (isLiked == false)
+                      ? const Icon(
+                          Icons.favorite_border_outlined,
+                          color: Colors.redAccent,
+                        )
+                      : const Icon(
+                          Icons.favorite,
+                          color: Colors.red,
+                        ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.insert_comment_rounded,
+                    color: Colors.blueAccent,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.currency_rupee_rounded,
+                    color: Colors.greenAccent,
+                  ),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.chat_outlined,
+                        color: Colors.orangeAccent,
                       ),
                     ),
                   ),
-                  InkWell(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: const Text(
-                          'View all 100 comments',
+                ),
+              ],
+            ),
+
+            // Description and Comments Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${snap['upvote'].length} votes',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  RichText(
+                    text: const TextSpan(
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                          text: 'anshu',
                           style: TextStyle(
-                            fontSize: 16,
-                            color: Color.fromARGB(255, 119, 117, 117),
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
+                        TextSpan(
+                          text:
+                              ' commented: Hey, this is the description of the fund.',
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () {},
+                    child: const Text(
+                      'View all 100 comments',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color.fromARGB(255, 119, 117, 117),
                       ),
-                      onTap: () {}),
-                  SizedBox(
-                    child: Text(
-                      '${snap['date']}',
-                      style: const TextStyle(
-                        color: Colors.grey,
-                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${snap['date']}',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
                     ),
                   ),
                 ],
-              ))
-        ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

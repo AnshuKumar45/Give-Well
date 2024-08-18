@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:fundraiser_app/controllers/auth_controller.dart';
 import 'package:fundraiser_app/controllers/firebase_storage_controller.dart';
@@ -8,31 +9,47 @@ import 'package:fundraiser_app/widgets/form_field_input.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:velocity_x/velocity_x.dart';
+
+import '../../utils/contant.dart';
 import '../../utils/text_styles.dart';
 
 //
-class CreateFundRaserPage extends StatelessWidget {
-  CreateFundRaserPage({super.key});
+class CreateFundRaserPage extends StatefulWidget {
+  const CreateFundRaserPage({super.key});
 
+  @override
+  State<CreateFundRaserPage> createState() => _CreateFundRaserPageState();
+}
+
+class _CreateFundRaserPageState extends State<CreateFundRaserPage> {
   final TextEditingController nameController = TextEditingController();
+
   final TextEditingController descController = TextEditingController();
+
   final TextEditingController amountController = TextEditingController();
+
   final TextEditingController upiController = TextEditingController();
+
   final TextEditingController endDateController = TextEditingController();
+
   final TextEditingController fundTypeController = TextEditingController();
+
   final TextEditingController phoneController = TextEditingController();
+
   final TextEditingController emailController = TextEditingController();
   final FirebaseStorageController storageController =
       Get.put(FirebaseStorageController());
 
   final _authController = Get.find<AuthController>();
+  List<String> optionList = ['Health', 'Disaster', 'General', 'Social', 'NGO'];
+  String? selectedValue = Utils.fundCategories[0];
+  CustomFormField form = CustomFormField();
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     phoneController.text = _authController.userDetails.value!.phoneNumber!;
     emailController.text = _authController.userDetails.value!.email!;
-    List<String> optionList = ['Health', 'Disater', 'General', 'Social', 'NGO'];
-    String? selectedValue = optionList[0];
-    CustomFormField form = CustomFormField();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColor.primaryBackgroundW,
@@ -66,13 +83,13 @@ class CreateFundRaserPage extends StatelessWidget {
               storageController.uploadedFileURL.value = '';
               selectedValue = optionList[0];
             },
-            child: text("post", AppColor.textAccentW, 18),
+            child: text("Post", AppColor.textAccentW, 18),
           )
         ],
       ),
       body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           child: Column(
             children: [
               Obx(() => Stack(
@@ -169,28 +186,62 @@ class CreateFundRaserPage extends StatelessWidget {
                 keyboardType: TextInputType.emailAddress,
                 style: GoogleFonts.aBeeZee(),
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              DropdownButtonFormField<String>(
-                value: selectedValue,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+              15.heightBox,
+              DropdownButtonFormField2(
+                  iconStyleData: IconStyleData(
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                    ),
+                    iconSize: 30,
+                    iconEnabledColor: const Color(0xFF251E1E).withOpacity(.5),
+                    iconDisabledColor: const Color(0xFF251E1E).withOpacity(.5),
                   ),
-                ),
-                items: optionList
-                    .map(
-                      (String item) => DropdownMenuItem<String>(
-                        value: item,
-                        child: text(item, Colors.black, 16),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (String? value) {
-                  selectedValue = value;
-                },
-              ),
+                  dropdownStyleData: DropdownStyleData(
+                    maxHeight: 200,
+                    elevation: 1,
+                    width: 115,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: AppColor.textAccentB,
+                    ),
+                    offset: Offset(width * .72, 0),
+                    scrollbarTheme: const ScrollbarThemeData(
+                      radius: Radius.circular(10),
+                    ),
+                  ),
+                  isExpanded: false,
+                  menuItemStyleData: const MenuItemStyleData(
+                    height: 40,
+                    padding: EdgeInsets.only(left: 15, right: 14),
+                  ),
+                  hint: Text(
+                    'Fund category',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF323232).withOpacity(0.7),
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  decoration: form.inputDecoration('Select category', false,
+                      const Icon(Icons.wysiwyg_rounded)),
+                  items: Utils.fundCategories
+                      .map((item) => DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ))
+                      .toList(),
+                  onChanged: (String? value) {
+                    selectedValue = value;
+                  }),
               const SizedBox(
                 height: 10,
               ),
