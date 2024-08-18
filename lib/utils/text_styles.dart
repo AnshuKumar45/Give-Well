@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-Text text(String text, Color c, double size) {
+Text text(String txt, Color c, double size,{FontWeight? fw}) {
   return Text(
-    text,
+    txt,
     style: GoogleFonts.aBeeZee(
       color: c,
       fontSize: size,
-    ),
+      
+    ).copyWith(fontWeight: fw),
   );
 }

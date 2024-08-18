@@ -12,6 +12,7 @@ class FundCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(snap['upi'].toString());
     String photoUrl = (snap['photoUrl'] == '')
         ? 'https://img.freepik.com/free-vector/no-data-concept-illustration_114360-536.jpg?t=st=1723963444~exp=1723967044~hmac=4de1e61719b003b21114b7a5a51c1dec5759211b80c107a12994eb16e5cd3a52&w=740'
         : snap['photoUrl'];

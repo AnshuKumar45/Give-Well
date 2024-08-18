@@ -11,58 +11,55 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import '../../utils/contant.dart';
-import '../../utils/text_styles.dart';
 
-//
 class CreateFundRaserPage extends StatefulWidget {
   const CreateFundRaserPage({super.key});
-
   @override
   State<CreateFundRaserPage> createState() => _CreateFundRaserPageState();
 }
 
 class _CreateFundRaserPageState extends State<CreateFundRaserPage> {
   final TextEditingController nameController = TextEditingController();
-
   final TextEditingController descController = TextEditingController();
-
   final TextEditingController amountController = TextEditingController();
-
   final TextEditingController upiController = TextEditingController();
-
   final TextEditingController endDateController = TextEditingController();
-
   final TextEditingController fundTypeController = TextEditingController();
-
   final TextEditingController phoneController = TextEditingController();
-
   final TextEditingController emailController = TextEditingController();
   final FirebaseStorageController storageController =
       Get.put(FirebaseStorageController());
-
   final _authController = Get.find<AuthController>();
   List<String> optionList = ['Health', 'Disaster', 'General', 'Social', 'NGO'];
   String? selectedValue = Utils.fundCategories[0];
-  CustomFormField form = CustomFormField();
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    phoneController.text = _authController.userDetails.value!.phoneNumber!;
+    phoneController.text =
+        _authController.userDetails.value!.phoneNumber?.isNotEmpty == true
+            ? _authController.userDetails.value!.phoneNumber!
+            : '';
     emailController.text = _authController.userDetails.value!.email!;
-
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColor.primaryBackgroundW,
-        title: text("Create a Fund", AppColor.textAccentW, 20),
+        backgroundColor: AppColor.primary,
+        title: Text(
+          "Create a Fund",
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            color: AppColor.textAccentB,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () async {
-              Map<String, String> l = {
+              Map<String, String> details = {
                 "Name": _authController.userDetails.value!.displayName!,
                 "Email": emailController.text,
                 "Mobile": phoneController.text,
                 "Userid": _authController.userDetails.value!.uid,
-                "upi": upiController.text,
+                "UPI": upiController.text,
               };
               await PostMethods().post(
                 amount: amountController.text,
@@ -71,193 +68,202 @@ class _CreateFundRaserPageState extends State<CreateFundRaserPage> {
                 fundType: selectedValue!,
                 name: nameController.text,
                 photoUrl: storageController.uploadedFileURL.value,
-                details: l,
+                details: details,
               );
+              // Clear input fields after posting
               nameController.clear();
               descController.clear();
               amountController.clear();
-              fundTypeController.clear();
-              endDateController.clear();
               upiController.clear();
               phoneController.clear();
+              endDateController.clear();
               storageController.uploadedFileURL.value = '';
-              selectedValue = optionList[0];
+              selectedValue = Utils.fundCategories[0];
             },
-            child: text("Post", AppColor.textAccentW, 18),
-          )
+            child: Text(
+              "Post",
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                color: AppColor.textAccentB,
+              ),
+            ),
+          ),
         ],
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Image Upload Section
               Obx(() => Stack(
                     children: [
-                      SizedBox(
+                      Container(
                         height: 200,
                         width: double.infinity,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16.0),
-                          child: (storageController
-                                  .uploadedFileURL.value.isEmptyOrNull)
-                              ? Icon(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          color: AppColor.grey.withOpacity(0.2),
+                        ),
+                        child: (storageController
+                                .uploadedFileURL.value.isEmptyOrNull)
+                            ? Center(
+                                child: Icon(
                                   Icons.add_a_photo,
-                                  size: 150,
+                                  size: 100,
                                   color: AppColor.grey,
                                 ).onTap(() {
                                   storageController
                                       .uploadFile(FileSourceType.gallery);
-                                })
-                              : Image.network(
+                                }),
+                              )
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.network(
                                   storageController.uploadedFileURL.value,
                                   fit: BoxFit.cover,
                                 ),
-                        ),
+                              ),
                       ),
                     ],
                   )),
-              const SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                decoration: form.inputDecorationNormal("Fund name", false),
+              const SizedBox(height: 20),
+              // Fund Name Input
+              buildInputField(
                 controller: nameController,
-                keyboardType: TextInputType.name,
-                style: GoogleFonts.aBeeZee(),
-                validator: (name) => (name!.length < 4)
-                    ? 'Name Should be atleast 4 charaters'
+                label: "Fund Name",
+                prefixIcon: Icons.title,
+                validator: (name) => name!.length < 4
+                    ? 'Name should be at least 4 characters long'
                     : null,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                decoration: form.inputDecorationNormal("Description", false),
+              const SizedBox(height: 10),
+              // Description Input
+              buildInputField(
                 controller: descController,
-                keyboardType: TextInputType.name,
-                style: GoogleFonts.aBeeZee(),
+                label: "Description",
+                prefixIcon: Icons.description,
+                maxLines: 1,
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                decoration: form.inputDecoration("Amount to be collected",
-                    false, const Icon(Icons.currency_rupee_rounded)),
+              const SizedBox(height: 10),
+              // Amount Input
+              buildInputField(
                 controller: amountController,
-                style: GoogleFonts.aBeeZee(),
+                label: "Amount to be Collected",
+                prefixIcon: Icons.currency_rupee_rounded,
                 keyboardType: TextInputType.number,
                 validator: (value) =>
-                    (!value!.isNum) ? 'Enter a valid amount' : null,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
+                    !value!.isNum ? 'Enter a valid amount' : null,
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                decoration: form.inputDecoration(
-                    "Enter your upi", false, const Icon(Icons.email_outlined)),
+              const SizedBox(height: 10),
+              // UPI Input
+              buildInputField(
                 controller: upiController,
-                keyboardType: TextInputType.text,
-                style: GoogleFonts.aBeeZee(),
+                label: "UPI ID",
+                prefixIcon: Icons.account_balance_wallet_outlined,
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                decoration: form.inputDecoration(
-                    "Mobile No.", false, const Icon(Icons.phone)),
+              const SizedBox(height: 10),
+              // Phone Input
+              buildInputField(
                 controller: phoneController,
+                label: "Mobile Number",
+                prefixIcon: Icons.phone,
                 keyboardType: TextInputType.phone,
-                style: GoogleFonts.aBeeZee(),
-                validator: (value) => (!value!.isPhoneNumber)
-                    ? 'please enter a valid phone number'
-                    : null,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) =>
+                    !value!.isPhoneNumber ? 'Enter a valid phone number' : null,
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                decoration: form.inputDecoration(
-                    "Email", true, const Icon(Icons.email)),
+              const SizedBox(height: 10),
+              // Email Input
+              buildInputField(
                 controller: emailController,
+                label: "Email",
+                prefixIcon: Icons.email,
                 keyboardType: TextInputType.emailAddress,
-                style: GoogleFonts.aBeeZee(),
-              ),
-              15.heightBox,
-              DropdownButtonFormField2(
-                  iconStyleData: IconStyleData(
-                    icon: const Icon(
-                      Icons.arrow_drop_down,
-                    ),
-                    iconSize: 30,
-                    iconEnabledColor: const Color(0xFF251E1E).withOpacity(.5),
-                    iconDisabledColor: const Color(0xFF251E1E).withOpacity(.5),
-                  ),
-                  dropdownStyleData: DropdownStyleData(
-                    maxHeight: 200,
-                    elevation: 1,
-                    width: 115,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: AppColor.textAccentB,
-                    ),
-                    offset: Offset(width * .72, 0),
-                    scrollbarTheme: const ScrollbarThemeData(
-                      radius: Radius.circular(10),
-                    ),
-                  ),
-                  isExpanded: false,
-                  menuItemStyleData: const MenuItemStyleData(
-                    height: 40,
-                    padding: EdgeInsets.only(left: 15, right: 14),
-                  ),
-                  hint: Text(
-                    'Fund category',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF323232).withOpacity(0.7),
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  decoration: form.inputDecoration('Select category', false,
-                      const Icon(Icons.wysiwyg_rounded)),
-                  items: Utils.fundCategories
-                      .map((item) => DropdownMenuItem<String>(
-                            value: item,
-                            child: Text(
-                              item,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ))
-                      .toList(),
-                  onChanged: (String? value) {
-                    selectedValue = value;
-                  }),
-              const SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                controller: endDateController,
-                decoration: form.inputDecoration(
-                    "End date", true, const Icon(Icons.calendar_today)),
-                style: GoogleFonts.aBeeZee(),
-                onTap: () => selectDate(context),
                 readOnly: true,
               ),
+              const SizedBox(height: 15),
+              // End Date Picker
+              buildInputField(
+                controller: endDateController,
+                label: "End Date",
+                prefixIcon: Icons.calendar_today,
+                readOnly: true,
+                onTap: () => selectDate(context),
+              ),
+              const SizedBox(height: 20),
+              // Fund Category Dropdown
+              fundCategory(width),
             ],
           ),
         ),
       ),
     );
+  }
+
+  DropdownButtonFormField2<String> fundCategory(double width) {
+    return DropdownButtonFormField2(
+        iconStyleData: IconStyleData(
+          icon: const Icon(
+            Icons.arrow_drop_down,
+          ),
+          iconSize: 29,
+          iconEnabledColor: const Color(0xFF251E1E).withOpacity(.5),
+          iconDisabledColor: const Color(0xFF251E1E).withOpacity(.5),
+        ),
+        dropdownStyleData: DropdownStyleData(
+          maxHeight: 175,
+          elevation: 1,
+          width: 115,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: AppColor.textAccentB,
+          ),
+          offset: Offset(width * .69, 0),
+          scrollbarTheme: const ScrollbarThemeData(
+            radius: Radius.circular(10),
+          ),
+        ),
+        isExpanded: false,
+        menuItemStyleData: const MenuItemStyleData(
+          height: 40,
+          padding: EdgeInsets.only(left: 15, right: 14),
+        ),
+        hint: Text(
+          'Fund category',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: const Color(0xFF323232).withOpacity(0.7),
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+        decoration: InputDecoration(
+          labelText: 'Select Category',
+          prefixIcon: const Icon(Icons.wysiwyg_rounded),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          filled: true,
+          fillColor: Colors.grey.withOpacity(0.1),
+        ),
+        items: Utils.fundCategories
+            .map((item) => DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(
+                    item,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ))
+            .toList(),
+        onChanged: (String? value) {
+          selectedValue = value;
+        });
   }
 
   Future<void> selectDate(BuildContext context) async {
