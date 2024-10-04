@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fundraiser_app/controllers/firebase_storage_controller.dart';
 import 'package:fundraiser_app/utils/file_picker_service.dart';
+import 'package:fundraiser_app/widgets/custrom_circular_progress.dart';
 import 'package:get/get.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -17,6 +18,7 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const CustomCircularProgress(),
             ElevatedButton(
               onPressed: () => controller.uploadFile(FileSourceType.gallery),
               child: const Text('Upload from Gallery'),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/utils/change_focus_field.dart';
+import 'package:fundraiser_app/utils/constant.dart';
 import 'package:fundraiser_app/utils/text_styles.dart';
 import 'package:fundraiser_app/views/auth/signup_page.dart';
 import 'package:fundraiser_app/widgets/custom_elevated_button.dart';
@@ -158,7 +159,9 @@ class _LoginPageState extends State<LoginPage> {
                   text('Don\'t have an account? ', AppColor.textAccentW, 12),
                   TextButton(
                     onPressed: () {
-                      Get.to(() => const SignUpPage());
+                      Get.to(() => const SignUpPage(),
+                          transition: Utils.rToL,
+                          duration: const Duration(milliseconds: 400));
                     },
                     child: text('Sign Up', AppColor.primary, 12,
                         fw: FontWeight.bold),

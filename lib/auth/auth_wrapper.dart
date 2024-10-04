@@ -5,22 +5,31 @@ import 'package:fundraiser_app/views/auth/login_page.dart';
 import 'package:fundraiser_app/views/navigation_wrapper.dart';
 import 'package:get/get.dart';
 
+import '../database/local_storage.dart'; // Ensure correct import for LocalStorage
+
 class AuthWrapper {
-  final _authController = Get.put(AuthController());
-  // String? _email;
+  final AuthController _authController = Get.put(AuthController());
   User? _user;
-  Widget navigateUser() {
+  String? _email;
+
+  Future<Widget> navigateUser() async {
     _user = _authController.user.value;
 
     if (_user != null) {
-      return NavigationWrapper();
+      _email = await LocalStorage.getUserEmail();
+      if (_email != null && _email!.isNotEmpty) {
+        return NavigationWrapper(); 
+      } else {
+        return const LoginPage();
+      }
     } else {
       return const LoginPage();
     }
   }
 
+  // Optional: This method can be used to explicitly fetch user data when needed
   void fetchUser() async {
     _user = _authController.user.value;
-    // _email = await LocalStorage.getUserEmail();
+    _email = await LocalStorage.getUserEmail();
   }
 }

@@ -57,7 +57,7 @@ class AuthController extends GetxController {
         await LocalStorage.saveUserDetails(
           user.value!.displayName ?? 'Unknown User',
           user.value!.email ?? 'No Email',
-          user.value!.photoURL ?? '',
+          user.value!.photoURL ?? 'No Url',
           user.value!.phoneNumber ?? 'No Phone Number',
         );
         Get.offAll(() => NavigationWrapper());

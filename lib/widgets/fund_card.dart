@@ -12,7 +12,6 @@ class FundCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(snap['upi'].toString());
     String photoUrl = (snap['photoUrl'] == '')
         ? 'https://img.freepik.com/free-vector/no-data-concept-illustration_114360-536.jpg?t=st=1723963444~exp=1723967044~hmac=4de1e61719b003b21114b7a5a51c1dec5759211b80c107a12994eb16e5cd3a52&w=740'
         : snap['photoUrl'];
@@ -20,24 +19,25 @@ class FundCard extends StatelessWidget {
 
     return Card(
       color: AppColor.primaryBackgroundW,
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+      elevation: 8, // Adds a subtle shadow for depth
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header section with fund name and more icon
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
                   child: Text(
                     snap['fundName'],
                     style: TextStyle(
-                      fontSize: 25,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: AppColor.primary,
                     ),
@@ -83,21 +83,24 @@ class FundCard extends StatelessWidget {
 
             // Details Section
             Text(
-              'Details: ${snap['description']}',
+              snap['description'],
               style: const TextStyle(
                 fontSize: 16,
-                color: Colors.black54,
+                color: Colors.black87,
               ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
-              'Needed Amount: ${snap['amount']}',
-              style: const TextStyle(
+              'Amount Needed: ${snap['amount']}',
+              style: TextStyle(
                 fontSize: 16,
-                color: Colors.black54,
+                color: AppColor.grey,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
               'UPI: ${snap['upi']}',
               style: const TextStyle(
@@ -112,31 +115,46 @@ class FundCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
               child: Image.network(
                 photoUrl,
-                height: MediaQuery.of(context).size.height * 0.35,
+                height: MediaQuery.of(context).size.height * 0.3,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
             const SizedBox(height: 12),
 
-            // Upvote, Comment, Donate, Chat Section
+            // Action Buttons: Upvote, Comment, Donate, Chat
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(
-                  onPressed: () async {
-                    PostMethods().updateLike(snap['fundId'],
-                        _authController.userDetails.value!.uid, snap['upvote']);
-                    (isLiked == false) ? true : false;
-                  },
-                  icon: (isLiked == false)
-                      ? const Icon(
-                          Icons.favorite_border_outlined,
-                          color: Colors.redAccent,
-                        )
-                      : const Icon(
-                          Icons.favorite,
-                          color: Colors.red,
-                        ),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () async {
+                        PostMethods().updateLike(
+                            snap['fundId'],
+                            _authController.userDetails.value!.uid,
+                            snap['upvote']);
+                        (isLiked == false) ? true : false;
+                      },
+                      icon: (isLiked == false)
+                          ? const Icon(
+                              Icons.favorite_border_outlined,
+                              color: Colors.redAccent,
+                            )
+                          : const Icon(
+                              Icons.favorite,
+                              color: Colors.red,
+                            ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${snap['upvote'].length} Likes',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
                 ),
                 IconButton(
                   onPressed: () {},
@@ -152,38 +170,26 @@ class FundCard extends StatelessWidget {
                     color: Colors.greenAccent,
                   ),
                 ),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.chat_outlined,
-                        color: Colors.orangeAccent,
-                      ),
-                    ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.chat_outlined,
+                    color: Colors.orangeAccent,
                   ),
                 ),
               ],
             ),
+            const SizedBox(height: 8),
 
-            // Description and Comments Section
+            // Comments Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '${snap['upvote'].length} votes',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
                   RichText(
                     text: const TextSpan(
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color: Colors.black87),
                       children: [
                         TextSpan(
                           text: 'anshu',
