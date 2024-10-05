@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fundraiser_app/controllers/auth_controller.dart';
 import 'package:fundraiser_app/database/firebase_post_service.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
+import 'package:fundraiser_app/widgets/comment_screen.dart';
 import 'package:get/get.dart';
 
 class FundCard extends StatelessWidget {
@@ -16,7 +17,7 @@ class FundCard extends StatelessWidget {
         ? 'https://img.freepik.com/free-vector/no-data-concept-illustration_114360-536.jpg?t=st=1723963444~exp=1723967044~hmac=4de1e61719b003b21114b7a5a51c1dec5759211b80c107a12994eb16e5cd3a52&w=740'
         : snap['photoUrl'];
     bool isLiked = Get.put(false);
-
+    String userid = _authController.userDetails.value!.uid;
     return Card(
       color: AppColor.primaryBackgroundW,
       elevation: 8, // Adds a subtle shadow for depth
@@ -130,19 +131,16 @@ class FundCard extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () async {
-                        PostMethods().updateLike(
-                            snap['fundId'],
-                            _authController.userDetails.value!.uid,
-                            snap['upvote']);
-                        (isLiked == false) ? true : false;
+                        PostMethods()
+                            .updateLike(snap['fundId'], userid, snap['upvote']);
                       },
-                      icon: (isLiked == false)
+                      icon: snap['upvote'].contains(userid)
                           ? const Icon(
-                              Icons.favorite_border_outlined,
+                              Icons.favorite,
                               color: Colors.redAccent,
                             )
                           : const Icon(
-                              Icons.favorite,
+                              Icons.favorite_outline_rounded,
                               color: Colors.red,
                             ),
                     ),
@@ -157,7 +155,8 @@ class FundCard extends StatelessWidget {
                   ],
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => CommentScreen())),
                   icon: const Icon(
                     Icons.insert_comment_rounded,
                     color: Colors.blueAccent,
@@ -206,7 +205,11 @@ class FundCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   InkWell(
-                    onTap: () {},
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CommentScreen(),
+                      ),
+                    ),
                     child: const Text(
                       'View all 100 comments',
                       style: TextStyle(
