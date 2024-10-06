@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fundraiser_app/controllers/auth_controller.dart';
 import 'package:fundraiser_app/database/firebase_post_service.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
-import 'package:fundraiser_app/widgets/comment_screen.dart';
+import 'package:fundraiser_app/views/funds/funds_details/comment_screen.dart';
 import 'package:get/get.dart';
 
 class FundCard extends StatelessWidget {
@@ -155,8 +155,11 @@ class FundCard extends StatelessWidget {
                   ],
                 ),
                 IconButton(
-                  onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => CommentScreen())),
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => CommentScreen(
+                            snap: snap,
+                            authController: _authController,
+                          ))),
                   icon: const Icon(
                     Icons.insert_comment_rounded,
                     color: Colors.blueAccent,
@@ -207,7 +210,10 @@ class FundCard extends StatelessWidget {
                   InkWell(
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => CommentScreen(),
+                        builder: (context) => CommentScreen(
+                          authController: _authController,
+                          snap: snap,
+                        ),
                       ),
                     ),
                     child: const Text(

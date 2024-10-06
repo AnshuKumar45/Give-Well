@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fundraiser_app/utils/text_styles.dart';
 
 class CommentCard extends StatefulWidget {
-  const CommentCard({super.key});
+  final snap;
+  const CommentCard({super.key, required this.snap});
 
   @override
   State<CommentCard> createState() => _CommentCardState();
@@ -39,7 +40,7 @@ class _CommentCardState extends State<CommentCard> {
                               color: Colors.black87),
                         ),
                         TextSpan(
-                          text: "some description to insert",
+                          text: "${widget.snap['comment']}",
                           style: const TextStyle(color: Colors.black),
                         )
                       ],
@@ -47,7 +48,8 @@ class _CommentCardState extends State<CommentCard> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
-                    child: text("12/09/23", Colors.black, 12),
+                    child:
+                        text("${widget.snap['publishDate']}", Colors.black, 12),
                   ),
                 ],
               ),
