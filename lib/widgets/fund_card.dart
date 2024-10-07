@@ -1,21 +1,53 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fundraiser_app/controllers/auth_controller.dart';
 import 'package:fundraiser_app/database/firebase_post_service.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/views/funds/funds_details/comment_screen.dart';
+import 'package:fundraiser_app/widgets/custom_snackbar.dart';
 import 'package:get/get.dart';
+import 'package:velocity_x/velocity_x.dart';
 
-class FundCard extends StatelessWidget {
+class FundCard extends StatefulWidget {
   final snap;
   FundCard({super.key, required this.snap});
 
+  @override
+  State<FundCard> createState() => _FundCardState();
+}
+
+class _FundCardState extends State<FundCard> {
   final _authController = Get.find<AuthController>();
+
+//
+  int commentlen = 0;
+  String comment = "";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCommets();
+  }
+
+  void getCommets() async {
+    try {
+      QuerySnapshot commentSnap = await FirebaseFirestore.instance
+          .collection('fund')
+          .doc(widget.snap['fundId'])
+          .collection('comments')
+          .get();
+      commentlen = commentSnap.docs.length;
+    } catch (e) {
+      showCustomSnackbar(title: 'Error', message: e.toString());
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    String photoUrl = (snap['photoUrl'] == '')
+    String photoUrl = (widget.snap['photoUrl'] == '')
         ? 'https://img.freepik.com/free-vector/no-data-concept-illustration_114360-536.jpg?t=st=1723963444~exp=1723967044~hmac=4de1e61719b003b21114b7a5a51c1dec5759211b80c107a12994eb16e5cd3a52&w=740'
-        : snap['photoUrl'];
+        : widget.snap['photoUrl'];
     // bool isLiked = Get.put(false);
     String userid = _authController.userDetails.value!.uid;
     return Card(
@@ -36,7 +68,7 @@ class FundCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    snap['fundName'],
+                    widget.snap['fundName'],
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -84,7 +116,7 @@ class FundCard extends StatelessWidget {
 
             // Details Section
             Text(
-              snap['description'],
+              widget.snap['description'],
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.black87,
@@ -94,7 +126,7 @@ class FundCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Amount Needed: ${snap['amount']}',
+              'Amount Needed: ${widget.snap['amount']}',
               style: TextStyle(
                 fontSize: 16,
                 color: AppColor.grey,
@@ -103,7 +135,7 @@ class FundCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'UPI: ${snap['upi']}',
+              'UPI: ${widget.snap['upi']}',
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.black54,
@@ -131,10 +163,10 @@ class FundCard extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () async {
-                        PostMethods()
-                            .updateLike(snap['fundId'], userid, snap['upvote']);
+                        PostMethods().updateLike(widget.snap['fundId'], userid,
+                            widget.snap['upvote']);
                       },
-                      icon: snap['upvote'].contains(userid)
+                      icon: widget.snap['upvote'].contains(userid)
                           ? const Icon(
                               Icons.favorite,
                               color: Colors.redAccent,
@@ -146,7 +178,7 @@ class FundCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${snap['upvote'].length} Likes',
+                      '${widget.snap['upvote'].length} Likes',
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black54,
@@ -157,7 +189,7 @@ class FundCard extends StatelessWidget {
                 IconButton(
                   onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => CommentScreen(
-                            snap: snap,
+                            snap: widget.snap,
                             authController: _authController,
                           ))),
                   icon: const Icon(
@@ -212,12 +244,12 @@ class FundCard extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => CommentScreen(
                           authController: _authController,
-                          snap: snap,
+                          snap: widget.snap,
                         ),
                       ),
                     ),
-                    child: const Text(
-                      'View all 100 comments',
+                    child: Text(
+                      'View all $commentlen comments',
                       style: TextStyle(
                         fontSize: 16,
                         color: Color.fromARGB(255, 119, 117, 117),
@@ -226,7 +258,7 @@ class FundCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${snap['date']}',
+                    '${widget.snap['date']}',
                     style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
