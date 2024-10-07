@@ -2,15 +2,18 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:fundraiser_app/controllers/auth_controller.dart';
 import 'package:fundraiser_app/controllers/firebase_storage_controller.dart';
+import 'package:fundraiser_app/controllers/navigation_controller.dart';
 import 'package:fundraiser_app/database/firebase_post_service.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/utils/file_picker_service.dart';
+import 'package:fundraiser_app/utils/text_styles.dart';
 import 'package:fundraiser_app/widgets/form_field_input.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import '../../utils/constant.dart';
+import '../../widgets/custom_text_button.dart';
 
 class CreateFundRaserPage extends StatefulWidget {
   const CreateFundRaserPage({super.key});
@@ -30,10 +33,13 @@ class _CreateFundRaserPageState extends State<CreateFundRaserPage> {
   final FirebaseStorageController storageController =
       Get.put(FirebaseStorageController());
   final _authController = Get.find<AuthController>();
-  List<String> optionList = ['Health', 'Disaster', 'General', 'Social', 'NGO'];
+  final navigationController = Get.find<NavigationController>();
   String? selectedValue = Utils.fundCategories[0];
   @override
   Widget build(BuildContext context) {
+    debugPrint("image path ${storageController.selectedImageFile.value}");
+    debugPrint(
+        'uploaded image path ${storageController.uploadedFileURL.value}');
     double width = MediaQuery.of(context).size.width;
     phoneController.text =
         _authController.userDetails.value!.phoneNumber?.isNotEmpty == true
@@ -42,92 +48,120 @@ class _CreateFundRaserPageState extends State<CreateFundRaserPage> {
     emailController.text = _authController.userDetails.value!.email!;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColor.primary,
-        title: Text(
-          "Create a Fund",
-          style: GoogleFonts.poppins(
-            fontSize: 20,
-            color: AppColor.textAccentB,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              Map<String, String> details = {
-                "Name": _authController.userDetails.value!.displayName!,
-                "Email": emailController.text,
-                "Mobile": phoneController.text,
-                "Userid": _authController.userDetails.value!.uid,
-                "UPI": upiController.text,
-              };
-              await PostMethods().post(
-                amount: amountController.text,
-                desc: descController.text,
-                endDate: endDateController.text,
-                fundType: selectedValue!,
-                name: nameController.text,
-                photoUrl: storageController.uploadedFileURL.value,
-                details: details,
-              );
-              // Clear input fields after posting
-              nameController.clear();
-              descController.clear();
-              amountController.clear();
-              upiController.clear();
-              phoneController.clear();
-              endDateController.clear();
-              storageController.uploadedFileURL.value = '';
-              selectedValue = Utils.fundCategories[0];
-            },
-            child: Text(
-              "Post",
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                color: AppColor.textAccentB,
-              ),
+          backgroundColor: AppColor.primary,
+          title: Text(
+            "Create a Fund",
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              color: AppColor.textAccentB,
+              fontWeight: FontWeight.w600,
             ),
           ),
-        ],
-      ),
+          actions: [
+            Obx(() {
+              bool isImageSelected =
+                  storageController.selectedImageFile.value != null;
+              debugPrint(isImageSelected.toString());
+              return CustomTextButton(
+                label: "Post",
+                fontSize: 18,
+                textColor: AppColor.textAccentB,
+                onPressed: isImageSelected
+                    ? () async {
+                        // Proceed with posting only if the image is selected
+                        Map<String, String> details = {
+                          "Name":
+                              _authController.userDetails.value!.displayName!,
+                          "Email": emailController.text,
+                          "Mobile": phoneController.text,
+                          "Userid": _authController.userDetails.value!.uid,
+                          "UPI": upiController.text,
+                        };
+                        storageController.uploadFile().then((value) async {
+                          if (value) {
+                            await PostMethods().post(
+                              amount: amountController.text,
+                              desc: descController.text,
+                              endDate: endDateController.text,
+                              fundType: selectedValue!,
+                              name: nameController.text,
+                              photoUrl: storageController.uploadedFileURL.value,
+                              details: details,
+                            );
+                            nameController.clear();
+                            descController.clear();
+                            amountController.clear();
+                            upiController.clear();
+                            phoneController.clear();
+                            endDateController.clear();
+                            storageController.uploadedFileURL.value = '';
+                            storageController.clearSelectedImage();
+                            selectedValue = Utils.fundCategories[0];
+                            navigationController.updateIndex(0);
+                            navigationController.pageController.jumpToPage(0);
+                          }
+                        });
+                      }
+                    : null,
+              );
+            }),
+          ]),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image Upload Section
-              Obx(() => Stack(
-                    children: [
-                      Container(
-                        height: 200,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          color: AppColor.grey.withOpacity(0.2),
-                        ),
-                        child: (storageController
-                                .uploadedFileURL.value.isEmptyOrNull)
-                            ? Center(
-                                child: Icon(
-                                  Icons.add_a_photo,
-                                  size: 100,
-                                  color: AppColor.grey,
-                                ).onTap(() {
-                                  storageController
-                                      .uploadFile(FileSourceType.gallery);
-                                }),
-                              )
-                            : ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: Image.network(
-                                  storageController.uploadedFileURL.value,
-                                  fit: BoxFit.cover,
-                                ),
+              Stack(
+                children: [
+                  Container(
+                    height: 200,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: AppColor.grey.withOpacity(0.2),
+                    ),
+                    child: Obx(() {
+                      if (storageController.selectedImageFile.value == null) {
+                        return Center(
+                          child: Icon(
+                            Icons.add_a_photo,
+                            size: 100,
+                            color: AppColor.grey,
+                          ).onTap(() {
+                            showImageSourceSelector(context, (p0) => null);
+                          }),
+                        );
+                      } else {
+                        return Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: Image.file(
+                                storageController.selectedImageFile.value!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: 200,
                               ),
-                      ),
-                    ],
-                  )),
+                            ),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: Icon(
+                                Icons.cancel,
+                                color: AppColor.grey.withOpacity(.5),
+                                size: 30,
+                              ).onTap(() {
+                                storageController.clearSelectedImage();
+                              }),
+                            ),
+                          ],
+                        );
+                      }
+                    }),
+                  ),
+                ],
+              ),
               const SizedBox(height: 20),
               // Fund Name Input
               buildInputField(
@@ -197,6 +231,84 @@ class _CreateFundRaserPageState extends State<CreateFundRaserPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void showImageSourceSelector(
+      BuildContext context, Function(FileSourceType) onSelected) {
+    double height = MediaQuery.of(context).size.height;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColor.primaryBackgroundW,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          height: height * .170,
+          decoration: BoxDecoration(
+            color: AppColor.primaryBackgroundW,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              text('Choose from', AppColor.primaryBackgroundB, 14),
+              const SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _imageSourceOption(
+                    icon: Icons.photo_library,
+                    label: "Gallery",
+                    onTap: () {
+                      storageController.selectFile(FileSourceType.gallery);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  _imageSourceOption(
+                    icon: Icons.camera_alt,
+                    label: "Camera",
+                    onTap: () {
+                      storageController.selectFile(FileSourceType.camera);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _imageSourceOption({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColor.primary.withOpacity(0.2),
+            ),
+            child: Icon(
+              icon,
+              size: 25,
+              color: AppColor.primary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          text(label, AppColor.primaryBackgroundB, 14)
+        ],
       ),
     );
   }

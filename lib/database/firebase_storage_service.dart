@@ -11,56 +11,57 @@ class FirebaseStorageService {
   static String community = "community/";
   static String personal = "personal/";
   static String storageBaseUrl = 'gs://communityfundraiserapp.appspot.com/';
-  final FilePickerService filePickerService = FilePickerService();
 
+  final FilePickerService filePickerService = FilePickerService();
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  ///------------------------uploading-----------------------------------
-  Future<String> uploadFile(FileSourceType sourceType) async {
-    String photoUrl = "";
-    try {
-      File? file = await filePickerService.pickFile(sourceType);
 
-      if (file != null) {
-        // Create a reference to the file in Firebase Storage
-        Reference storageRef = _storage
-            .refFromURL('$storageBaseUrl$personal${file.path.split('/').last}');
-        // Upload the file
-        await storageRef.putFile(file);
-        // Get the download URL
-        String downloadURL = await storageRef.getDownloadURL();
-        photoUrl = downloadURL;
-        debugPrint("This is the download url---->  $photoUrl");
-        // Show a success message
-        Get.snackbar('Success', 'File uploaded successfully!');
-      } else {
-        Get.snackbar('Error', 'No file selected');
-      }
-      return photoUrl;
+  ///------------------------Uploading a specific file-----------------------------------
+  Future<String> uploadFileFromFile(File file) async {
+    String downloadUrl = "";
+
+    try {
+      // Create a reference to the file location in Firebase Storage
+      Reference storageRef = _storage
+          .refFromURL('$storageBaseUrl$personal${file.path.split('/').last}');
+
+      // Upload the file to Firebase Storage
+      UploadTask uploadTask = storageRef.putFile(file);
+
+      // Wait until the file upload completes
+      await uploadTask;
+
+      // Get the file's download URL after upload
+      downloadUrl = await storageRef.getDownloadURL();
+
+      debugPrint("File uploaded successfully. Download URL: $downloadUrl");
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint('Failed to upload file: $e');
       Get.snackbar('Error', 'Failed to upload file: $e');
-      return photoUrl;
     }
+
+    return downloadUrl;
   }
 
-  ////------------------------------------downloading incomplete code-----------------------------------
+  ///------------------------Downloading a file-----------------------------------
   Future<void> downloadFile() async {
     try {
+      // Get the app's document directory
       Directory appDocDir = await getApplicationDocumentsDirectory();
       File downloadToFile = File('${appDocDir.path}/downloaded_file');
 
-      // Create a reference to the file in Firebase Storage
+      // Reference to the file in Firebase Storage
       Reference storageRef = _storage.refFromURL(
-          '${storageBaseUrl}logo.png'); // Replace with the file you want to download
+          '${storageBaseUrl}logo.png'); // Replace with the actual file you want to download
 
-      // Download the file
+      // Download the file and write it to the local storage
       await storageRef.writeToFile(downloadToFile);
 
       // Show a success message
-      debugPrint(downloadToFile.path);
+      debugPrint('File downloaded to: ${downloadToFile.path}');
       Get.snackbar('Success', 'File downloaded to ${downloadToFile.path}');
     } catch (e) {
+      debugPrint('Failed to download file: $e');
       Get.snackbar('Error', 'Failed to download file: $e');
     }
   }

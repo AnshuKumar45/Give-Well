@@ -4,9 +4,10 @@ import 'package:fundraiser_app/auth/auth_wrapper.dart';
 import 'package:fundraiser_app/controllers/navigation_controller.dart';
 import 'package:fundraiser_app/widgets/custrom_circular_progress.dart';
 import 'package:get/get.dart';
-
+import 'package:get_storage/get_storage.dart';
 void main() async {
   // Initialize Firebase services in main
+  await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   Get.put(NavigationController());
