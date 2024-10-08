@@ -38,6 +38,7 @@ class _CommentScreenState extends State<CommentScreen> {
             .collection('fund')
             .doc(widget.snap['fundId'])
             .collection('comments')
+            .orderBy('publishDate', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -63,7 +64,7 @@ class _CommentScreenState extends State<CommentScreen> {
           return ListView.builder(
               itemCount: (snapshot.data! as dynamic).docs.length,
               itemBuilder: (context, index) => CommentCard(
-                    snap: snapshot.data!.docs[index].data(),
+                    snap: snapshot.data!.docs[index].data(),authcontroller:widget.authController,
                   ));
         },
       ),

@@ -178,7 +178,7 @@ class _FundCardState extends State<FundCard> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${widget.snap['upvote'].length} Likes',
+                      '${widget.snap['upvote'].length} votes',
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black54,

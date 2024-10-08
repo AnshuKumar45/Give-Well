@@ -6,6 +6,7 @@ class CommentModels {
   final List likes;
   final String datePublished;
   final String userId;
+  final String fundId;
   const CommentModels({
     required this.commentId,
     required this.datePublished,
@@ -14,6 +15,7 @@ class CommentModels {
     required this.profile,
     required this.text,
     required this.userId,
+    required this.fundId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -24,5 +26,6 @@ class CommentModels {
         "like": likes,
         "userId": userId,
         "publishDate": datePublished,
+        "fundId": fundId,
       };
 }

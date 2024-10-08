@@ -247,7 +247,7 @@ class _CreateFundRaserPageState extends State<CreateFundRaserPage> {
       builder: (BuildContext context) {
         return Container(
           padding: const EdgeInsets.all(20),
-          height: height * .170,
+          height: height * .180,
           decoration: BoxDecoration(
             color: AppColor.primaryBackgroundW,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),

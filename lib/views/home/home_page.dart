@@ -63,7 +63,10 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.symmetric(
             horizontal: 5, vertical: 2), // Better padding for layout balance
         child: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('fund').snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('fund')
+              .orderBy('date', descending: true)
+              .snapshots(),
           builder: (context,
               AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {

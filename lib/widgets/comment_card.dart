@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:fundraiser_app/database/firebase_comment_service.dart';
 import 'package:fundraiser_app/utils/text_styles.dart';
 
 class CommentCard extends StatefulWidget {
   final snap;
-  const CommentCard({super.key, required this.snap});
+  final authcontroller;
+  const CommentCard(
+      {super.key, required this.snap, required this.authcontroller});
 
   @override
   State<CommentCard> createState() => _CommentCardState();
@@ -60,12 +63,33 @@ class _CommentCardState extends State<CommentCard> {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                child: Icon(
-                  Icons.favorite,
-                  size: 16,
+                child: InkWell(
+                  onTap: () async {
+                    CommentMethods().updateLike(
+                        widget.snap['fundId'],
+                        widget.snap['commentId'],
+                        widget.authcontroller.userDetails.value!.uid,
+                        widget.snap['like']);
+                  },
+                  child: widget.snap['like'].contains(
+                          widget.authcontroller.userDetails.value!.uid)
+                      ? const Icon(
+                          Icons.favorite,
+                          color: Colors.redAccent,
+                          size: 16,
+                        )
+                      : const Icon(
+                          Icons.favorite_outline_rounded,
+                          size: 16,
+                        ),
                 ),
               ),
-              text('23', Colors.grey, 12)
+              text(
+                  widget.snap['like'].length > 0
+                      ? "${widget.snap['like'].length}"
+                      : "",
+                  Colors.grey,
+                  12)
             ],
           ),
         ],
