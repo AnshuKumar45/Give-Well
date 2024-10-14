@@ -12,7 +12,7 @@ class CommentScreen extends StatefulWidget {
   final authController;
   const CommentScreen(
       {super.key, required this.snap, required this.authController});
-
+  
   @override
   State<CommentScreen> createState() => _CommentScreenState();
 }

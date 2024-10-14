@@ -1,6 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fundraiser_app/controllers/auth_controller.dart';
+import 'package:fundraiser_app/controllers/fund_controller.dart';
 import 'package:fundraiser_app/database/local_storage.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/utils/text_styles.dart';
@@ -18,7 +18,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final controller = Get.find<AuthController>();
+  final authController = Get.find<AuthController>();
+  final fundController = Get.put(FundController());
+
   String? email;
 
   void loadEmail() async {
@@ -35,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     debugPrint("Home Page");
-    debugPrint("Email of the user$email");
+    debugPrint("Email of the user: $email");
 
     return Scaffold(
       appBar: AppBar(
@@ -51,64 +53,54 @@ class _HomePageState extends State<HomePage> {
             },
             icon: Icon(
               Icons.messenger_outline_rounded,
-              color: AppColor.primaryBackgroundW, // Better color matching
-              size: 25, // Increased size for better visibility
+              color: AppColor.primaryBackgroundW,
+              size: 25,
             ),
           ),
         ],
       ),
-      backgroundColor: AppColor.primaryBackgroundW
-          .withOpacity(0.95), // Subtle background color
+      backgroundColor: AppColor.primaryBackgroundW.withOpacity(0.95),
       body: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 5, vertical: 2), // Better padding for layout balance
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('fund')
-              .orderBy('date', descending: true)
-              .snapshots(),
-          builder: (context,
-              AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 5.0,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColor.primary),
-                ),
-              );
-            }
-
-            if (snapshot.hasError) {
-              return Center(
-                child: text('Something went wrong. Please try again later.',
-                    Colors.redAccent, 16),
-              );
-            }
-
-            if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
-              return Center(
-                child: text('No funds available at the moment.',
-                    AppColor.textAccentW, 16),
-              );
-            }
-
-            return ListView.separated(
-              padding: const EdgeInsets.symmetric(
-                  vertical: 0), // Extra padding for better spacing
-              itemCount: snapshot.data!.docs.length,
-              itemBuilder: (context, index) {
-                var data = snapshot.data!.docs[index].data();
-                return FundCard(
-                  snap: data,
-                ).onTap(() {
-                  debugPrint(data['description'].toString());
-                });
-              },
-              separatorBuilder: (context, index) =>
-                  const SizedBox(height: 0), // Space between FundCards
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        child: Obx(() {
+          // Observing the state from FundController
+          if (fundController.isLoading.value) {
+            return Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 5.0,
+                valueColor: AlwaysStoppedAnimation<Color>(AppColor.primary),
+              ),
             );
-          },
-        ),
+          }
+
+          if (fundController.hasError.value) {
+            return Center(
+              child: text('Something went wrong. Please try again later.',
+                  Colors.redAccent, 16),
+            );
+          }
+
+          if (fundController.funds.isEmpty) {
+            return Center(
+              child: text('No funds available at the moment.',
+                  AppColor.textAccentW, 16),
+            );
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.symmetric(vertical: 0),
+            itemCount: fundController.funds.length,
+            itemBuilder: (context, index) {
+              var data = fundController.funds[index];
+              return FundCard(
+                snap: data,
+              ).onTap(() {
+                debugPrint(data['description'].toString());
+              });
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 0),
+          );
+        }),
       ),
     );
   }

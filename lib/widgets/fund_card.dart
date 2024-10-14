@@ -1,30 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fundraiser_app/controllers/auth_controller.dart';
-import 'package:fundraiser_app/database/firebase_post_service.dart';
+import 'package:fundraiser_app/controllers/fund_controller.dart';
 import 'package:fundraiser_app/utils/app_colors.dart';
 import 'package:fundraiser_app/views/funds/funds_details/comment_screen.dart';
 import 'package:fundraiser_app/widgets/custom_snackbar.dart';
 import 'package:get/get.dart';
-import 'package:velocity_x/velocity_x.dart';
 
 class FundCard extends StatefulWidget {
   final snap;
-  FundCard({super.key, required this.snap});
+  const FundCard({super.key, required this.snap});
 
   @override
   State<FundCard> createState() => _FundCardState();
 }
 
 class _FundCardState extends State<FundCard> {
+  final _fundController = Get.find<FundController>();
   final _authController = Get.find<AuthController>();
-
-//
   int commentlen = 0;
-  String comment = "";
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getCommets();
   }
@@ -36,20 +33,21 @@ class _FundCardState extends State<FundCard> {
           .doc(widget.snap['fundId'])
           .collection('comments')
           .get();
-      commentlen = commentSnap.docs.length;
+      setState(() {
+        commentlen = commentSnap.docs.length;
+      });
     } catch (e) {
       showCustomSnackbar(title: 'Error', message: e.toString());
     }
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     String photoUrl = (widget.snap['photoUrl'] == '')
-        ? 'https://img.freepik.com/free-vector/no-data-concept-illustration_114360-536.jpg?t=st=1723963444~exp=1723967044~hmac=4de1e61719b003b21114b7a5a51c1dec5759211b80c107a12994eb16e5cd3a52&w=740'
+        ? 'https://img.freepik.com/free-vector/no-data-concept-illustration_114360-536.jpg'
         : widget.snap['photoUrl'];
-    // bool isLiked = Get.put(false);
-    String userid = _authController.userDetails.value!.uid;
+    String userId = _authController.userDetails.value!.uid;
+
     return Card(
       color: AppColor.primaryBackgroundW,
       elevation: 8, // Adds a subtle shadow for depth
@@ -162,19 +160,15 @@ class _FundCardState extends State<FundCard> {
                 Row(
                   children: [
                     IconButton(
-                      onPressed: () async {
-                        PostMethods().updateLike(widget.snap['fundId'], userid,
-                            widget.snap['upvote']);
+                      onPressed: () {
+                        // Use controller's method to update the like status
+                        _fundController.updateLike(
+                            widget.snap['fundId'], userId);
                       },
-                      icon: widget.snap['upvote'].contains(userid)
-                          ? const Icon(
-                              Icons.favorite,
-                              color: Colors.redAccent,
-                            )
-                          : const Icon(
-                              Icons.favorite_outline_rounded,
-                              color: Colors.red,
-                            ),
+                      icon: widget.snap['upvote'].contains(userId)
+                          ? const Icon(Icons.favorite, color: Colors.redAccent)
+                          : const Icon(Icons.favorite_outline_rounded,
+                              color: Colors.red),
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -250,7 +244,7 @@ class _FundCardState extends State<FundCard> {
                     ),
                     child: Text(
                       'View all $commentlen comments',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         color: Color.fromARGB(255, 119, 117, 117),
                       ),
